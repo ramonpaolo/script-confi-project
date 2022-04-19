@@ -1,22 +1,20 @@
 #! /bin/bash
 
-echo "script rodando no diretório: $(pwd)"
+echo "Script rodando no diretório: $(pwd)"
 
-echo "deseja continuar?"
+echo "Deseja continuar?"
 read continu
-
 
 if [ $continu = "no" ]; then
 	exit
 fi
-
 
 echo "Digite o nome do projeto: "
 read name_project
 
 echo "O nome do projeto será: $name_project"
 
-echo -e "\nDeseja iniciar o git?"
+echo -e "\nDeseja iniciar o git no projeto?"
 read set_git
 
 echo -e "\nDeseja usar docker?"
@@ -45,11 +43,25 @@ mkdir $name_project && cd $name_project
 
 yarn init -y
 
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.editorconfig
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.gitignore
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/LICENSE
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/README-P.md
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/environment.d.ts
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/tsconfig.json
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.czrc
+
+mv README-P.md README.md 
+
 if [ $set_docker = 'yes' ]; then
 	mkdir docker && cd docker
 	mkdir settings
 	cd ..
-	touch docker-compose.yaml
+	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker-compose.yaml
+	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.dockerignore
+	#touch docker-compose.yaml
+	#echo -e "/node_modules\n/dist\n.env" > .dockerignore 
+	#echo 'version: "3.8"' > docker-compose.yaml
 fi
 
 if [ $set_database = 'yes' ]; then
@@ -60,10 +72,12 @@ elif [ $set_database = 'no' ]; then
 	echo -e "declare global {\nnamespace NodeJS{\ninterface ProcessEnv{\nPORT: number;\n}}}\nexport {}" > environment.d.ts	
 fi
 
-yarn add express typescript compression jest axios dotenv
+yarn add express typescript compression cors jest axios dotenv
 yarn add @types/express @types/compression @types/jest nodemon ts-node -D
 
 mkdir src && cd src
+
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/src/index.ts
 
 mkdir controllers
 mkdir routes
@@ -74,23 +88,27 @@ mkdir interfaces
 mkdir __tests__
 mkdir middlewares
 
-touch index.ts
+#touch index.ts
 
-echo -e "import express from 'express'\nimport compression from 'compression'\n\nconst app = express()\napp.use(compression())\n\nconst PORT = process.env.PORT || 3000\n\napp.listen(PORT)" > index.ts
+#echo -e "import express from 'express'\nimport compression from 'compression'\n\nconst app = express()\napp.use(compression())\n\nconst PORT = process.env.PORT || 3000\n\napp.listen(PORT)" > index.ts
 
 cd ..
 
-touch README.md
-touch LICENSE
+#touch README.md
+#touch LICENSE
 touch '.env'
 
-wget https://raw.githubusercontent.com/git/git-scm.com/main/MIT-LICENSE.txt
+#wget https://raw.githubusercontent.com/git/git-scm.com/main/MIT-LICENSE.txt
 
-cat MIT-LICENSE.txt > LICENSE
+#cat MIT-LICENSE.txt > LICENSE
 
-rm MIT-LICENSE.txt
+#rm MIT-LICENSE.txt
 
-yarn tsc --init
+#yarn tsc --init
+
+#echo -e '{\n "path": "cz-conventional-changelog"\n}' > .czrc
+
+#echo -e "/node_modules\n/dist\n.env" > .gitignore 
 
 if [ $set_git = 'yes' ]; then
 	echo -e "Digite o caminho para adicionar no github: \n"
@@ -99,13 +117,13 @@ if [ $set_git = 'yes' ]; then
 	git init .
 	git remote add origin $url_project_github	
 
-	git add .
+	# git add .
 
-	git commit -m "First commit"
+	# git commit -m "First commit"
 
-	git push -u origin master
+	# git push -u origin master
 fi
 
-echo -e "/node_modules\n/dist\n.env" > .gitignore 
+#echo "---Lembre-se de mudar o arquivo LICENSE---"
 
 echo -e "\n Pode abrir o projeto e programar : )"
