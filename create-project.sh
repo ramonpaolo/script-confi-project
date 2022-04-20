@@ -50,6 +50,9 @@ wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automatio
 wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/environment.d.ts
 wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/tsconfig.json
 wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.czrc
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/jest.config.ts
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/babel.config.js
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.eslintrc.json
 
 mv README-P.md README.md 
 
@@ -72,8 +75,8 @@ elif [ $set_database = 'no' ]; then
 	echo -e "declare global {\nnamespace NodeJS{\ninterface ProcessEnv{\nPORT: number;\n}}}\nexport {}" > environment.d.ts	
 fi
 
-yarn add express typescript compression cors jest axios dotenv
-yarn add @types/express @types/compression @types/jest nodemon ts-node -D
+yarn add express typescript compression cors jest axios dotenv express-rate-limit eslint serve-favicon
+yarn add @types/express @types/compression @types/cors @types/jest nodemon ts-node @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
 
 mkdir src && cd src
 
