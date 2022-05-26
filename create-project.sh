@@ -17,6 +17,9 @@ echo "O nome do projeto será: $name_project"
 echo -e "\nDeseja iniciar o git no projeto?"
 read set_git
 
+echo -e "\nDeseja usar HTTP/2.0 no projeto?"
+read set_http
+
 echo -e "\nDeseja usar docker?"
 read set_docker
 
@@ -90,7 +93,27 @@ yarn add @types/express @types/compression @types/cors @types/jest nodemon ts-no
 
 mkdir src && cd src
 
-wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/src/index.ts
+if [ $set_http = "yes" ]; then
+
+	yarn add spdy
+	yarn add @types/spdy -D
+
+	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/src/index-http2.ts
+
+	mv index-http2.ts index.ts
+
+	cd ..
+
+	openssl req -x509 -sha256 -nodes -days 1 -newkey rsa:2048 -keyout server.key -out server.crt
+
+	cd src
+
+elif [ $set_http = "no" ]; then
+
+	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/src/index.ts
+
+fi
+
 
 mkdir controllers
 mkdir routes
