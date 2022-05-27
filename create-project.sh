@@ -14,9 +14,6 @@ read name_project
 
 echo "O nome do projeto será: $name_project"
 
-echo -e "\nDeseja iniciar o git no projeto?"
-read set_git
-
 echo -e "\nDeseja usar HTTP/2.0 no projeto?"
 read set_http
 
@@ -59,6 +56,7 @@ wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automatio
 wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/jest.config.ts
 wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/babel.config.js
 wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.eslintrc.json
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/.env
 
 mv README-P.md README.md 
 
@@ -66,13 +64,44 @@ if [ $set_docker = 'yes' ]; then
 	mkdir docker && cd docker
 	
 	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/node-dev.dockerfile
-	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/node.dockerfile
-	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/nginx.dockerfile
+
+	if [ $set_http = "yes" ]; then
+
+		wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/node-http2.dockerfile
+
+		mv node-http2.dockerfile node.dockerfile
+
+	elif [ $set_http = "no" ]; then
+
+		wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/node.dockerfile
+
+	fi
+
+	if [ $set_http = "yes" ]; then
+		wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/nginx-http2.dockerfile
+
+		mv nginx-http2.dockerfile nginx.dockerfile
+
+	elif [ $set_http = "no" ]; then
+
+		wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/nginx.dockerfile
 	
+	fi
+
 	mkdir settings && cd settings
 
-	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/settings/nginx.conf
-	
+	if [ $set_http = "yes" ]; then
+
+		wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/settings/nginx-http2.conf
+		
+		mv nginx-http2.conf nginx.conf
+		
+	elif [ $set_http = "no" ]; then
+
+		wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker/settings/nginx.conf
+
+	fi
+
 	cd ../..
 
 	wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/docker-compose.yaml
@@ -88,8 +117,8 @@ if [ $set_database = 'yes' ]; then
 
 fi
 
-yarn add express typescript compression cors jest axios dotenv express-rate-limit eslint
-yarn add @types/express @types/compression @types/cors @types/jest nodemon ts-node @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
+yarn add express compression cors axios dotenv express-rate-limit eslint helmet
+yarn add typescript jest supertest @babel/preset-env @babel/preset-typescript @types/supertest @types/node @types/express @types/compression @types/cors @types/jest nodemon ts-node @typescript-eslint/eslint-plugin @typescript-eslint/parser @types/helmet -D
 
 mkdir src && cd src
 
@@ -104,7 +133,7 @@ if [ $set_http = "yes" ]; then
 
 	cd ..
 
-	openssl req -x509 -sha256 -nodes -days 1 -newkey rsa:2048 -keyout server.key -out server.crt
+	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
 
 	cd src
 
@@ -121,20 +150,11 @@ mkdir models
 mkdir settings
 mkdir services
 mkdir interfaces
-mkdir __tests__
 mkdir middlewares
+mkdir __tests__ && cd __tests__
 
-cd ..
+wget https://raw.githubusercontent.com/ramonpaolo/default-files-script-automation/master/src/__tests__/index.spec.ts
 
-touch '.env'
-touch '.env.example'
+cd ../..
 
-if [ $set_git = 'yes' ]; then
-	echo -e "Digite o nome do repositório para adicionar no git: \n"
-	read url_project_github
-
-	git init .
-	git remote add origin https://github.com/ramonpaolo/$url_project_github	
-fi
-
-echo -e "\n Pode abrir o projeto e programar : )"
+echo -e "\n Pode abrir o projeto com: 'code $name_project/'e programar : )"
